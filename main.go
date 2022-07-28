@@ -19,8 +19,4 @@ func main() {
     pokemon_id := strconv.Itoa(pokemon.ID)
 
     fmt.Println("The id of", pokemon_name , "is:", pokemon_id)
-
-    if err != nil {
-        log.Fatalf("Couldn't convert pokemon id to int")
-    }
 }
