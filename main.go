@@ -2,9 +2,11 @@ package main
 
 import (
 	"strings"
+    "net/http"
 
 	"github.com/gofiber/fiber/v2"
     "github.com/gofiber/template/html"
+    "github.com/gofiber/fiber/v2/middleware/filesystem"
 )
 
 func main() {
@@ -13,7 +15,13 @@ func main() {
     app := fiber.New(fiber.Config{
         Views: engine,
     })
-    app.Static("/", "./static")
+
+    app.Use("/static", filesystem.New(filesystem.Config{
+        Root: http.Dir("./static"),
+        Browse: true,
+    }))
+
+//    app.Static("/", "./static")
 
     app.Get("/", func(c *fiber.Ctx) error {
         return c.Render("index", fiber.Map{}, "layouts/main")

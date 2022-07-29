@@ -1,5 +1,5 @@
 <div class="text-2xl text-center pt-8">Evolution chain for {{ .Pokemon}}</div>
-<ul class="p-8 flex flex-col md:flex-row justify-between items-center">
+<ul class="p-8 flex flex-col justify-between items-center">
     {{range .Chains}}
     <li>
         {{range $i, $p := .Pokemons}}
