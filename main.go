@@ -5,38 +5,25 @@ import (
 	"log"
 	"os"
 	"strings"
-
-	"github.com/mtslzr/pokeapi-go"
 )
 
 func main() {
     if len(os.Args) < 2 {
         log.Fatalf("You need to provide a pokemon")
     }
-    pokemon_name := os.Args[1]
-    pokemon, err := pokeapi.PokemonSpecies(pokemon_name)
-    if err != nil {
-        log.Fatalf("Couldn't find a pokemon named: %s", pokemon_name)
-    }
 
-    chain := pokemon.EvolutionChain.URL
-    chain_id := strings.Split(chain, "/")[6]
-
-    evo_chain, err := pokeapi.EvolutionChain(chain_id)
-
-    if err != nil {
-        log.Fatalf("Couldn't find th evolution chain for %s", pokemon_name)
-    }
+    chains := GetEvolutionChain(os.Args[1])
 
 
-    for _, evolution := range evo_chain.Chain.EvolvesTo {
-
-        if len(evolution.EvolvesTo) > 0 {
-            fmt.Println(evo_chain.Chain.Species.Name,"->",evolution.Species.Name, "->", evolution.EvolvesTo[0].Species.Name)
-            break
+    for _, chain := range chains {
+        var str_chain strings.Builder
+        for i, pokemon := range chain.Pokemons {
+            if i+1 == len(chain.Pokemons){
+                str_chain.WriteString(pokemon)
+                break
+            }
+            str_chain.WriteString(fmt.Sprintf("%s->", pokemon))
         }
-        fmt.Println(evo_chain.Chain.Species.Name,"->",evolution.Species.Name)
+        fmt.Println(str_chain.String())
     }
-
-
 }
