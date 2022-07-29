@@ -11,6 +11,7 @@ type EvolutionChain struct {
     Pokemons []string
 }
 
+//TODO: Replace panicking with returning HTTP errors
 func GetEvolutionChain(pokemon_name string)([]EvolutionChain) {
     pokemon, err := pokeapi.PokemonSpecies(pokemon_name)
     if err != nil {
