@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html"
 )
 
@@ -20,6 +21,7 @@ func main() {
 		Root:   http.Dir("./static"),
 		Browse: true,
 	}))
+	app.Use(recover.New())
 
 	//    app.Static("/", "./static")
 
@@ -27,14 +29,22 @@ func main() {
 		return c.Render("index", fiber.Map{}, "layouts/main")
 	})
 
-	app.Post("/evolution", func(c *fiber.Ctx) error {
-		chains := GetEvolutionChain(strings.ToLower(c.FormValue("pokemon")))
+	app.Post("/", func(c *fiber.Ctx) error {
+		chains, err := GetEvolutionChain(strings.ToLower(c.FormValue("pokemon")))
 
-		if len(chains) == 0 {
-			return c.SendString("This pokemon doesn't have any evolution")
+		if err != nil {
+			return c.Render("index", fiber.Map{
+				"Error": err.Error(),
+			}, "layouts/main")
 		}
 
-		return c.Render("chain", fiber.Map{
+		if len(chains) == 0 {
+			return c.Status(fiber.StatusNoContent).Render("index", fiber.Map{
+				"Info": "This pokemon doesn't have any evolution",
+			}, "layouts/main")
+		}
+
+		return c.Render("index", fiber.Map{
 			"Pokemon": c.FormValue("pokemon"),
 			"Chains":  chains,
 		}, "layouts/main")
