@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"strings"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+
 	"github.com/mtslzr/pokeapi-go"
 )
 
 type Pokemon struct {
-	Id   int
-	Name string
+	Id        int
+	Name      string
+	SplashUrl string
 }
 
 type EvolutionChain struct {
@@ -41,17 +45,28 @@ func GetEvolutionChain(pokemon_name string) ([]EvolutionChain, error) {
 	for _, evolution := range evo_chain.Chain.EvolvesTo {
 
 		var chain EvolutionChain
+
+		parent_pokemon, err := pokeapi.Pokemon(evo_chain.Chain.Species.Name)
+
+		if err != nil {
+			return nil, fmt.Errorf("couldn't find parent pokemon")
+		}
+
 		evo_pokemon, err := pokeapi.Pokemon(evolution.Species.Name)
 		if err != nil {
 			return nil, fmt.Errorf("couldn't get evolution")
 		}
 
+		caser := cases.Title(language.AmericanEnglish)
+
 		chain.Pokemons = append(chain.Pokemons, Pokemon{
-			Id:   pokemon.ID,
-			Name: evo_chain.Chain.Species.Name,
+			Id:        parent_pokemon.ID,
+			Name:      caser.String(parent_pokemon.Name),
+			SplashUrl: fmt.Sprintf("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%d.png", parent_pokemon.ID),
 		}, Pokemon{
-			Id:   evo_pokemon.ID,
-			Name: evolution.Species.Name,
+			Id:        evo_pokemon.ID,
+			Name:      caser.String(evo_pokemon.Name),
+			SplashUrl: fmt.Sprintf("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%d.png", evo_pokemon.ID),
 		})
 
 		if len(evolution.EvolvesTo) > 0 {
@@ -60,8 +75,9 @@ func GetEvolutionChain(pokemon_name string) ([]EvolutionChain, error) {
 				return nil, fmt.Errorf("couldn't get evolution")
 			}
 			chain.Pokemons = append(chain.Pokemons, Pokemon{
-				Id:   last_evo_pokemon.ID,
-				Name: last_evo_pokemon.Name,
+				Id:        last_evo_pokemon.ID,
+				Name:      caser.String(last_evo_pokemon.Name),
+				SplashUrl: fmt.Sprintf("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%d.png", last_evo_pokemon.ID),
 			})
 		}
 

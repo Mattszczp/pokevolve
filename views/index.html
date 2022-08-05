@@ -11,7 +11,7 @@
   method="POST"
 >
   <input
-    class="mx-2 px-3 py-1.5 border border-gray-300 text-gray-900 shadow-sm font-medium rounded-full bg-white"
+    class="mx-2 shadow appearance-none border rounded-full w-72 py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:shadow-outline"
     type="text"
     name="pokemon"
     placeholder="Pokemon name or Pokedex ID"
@@ -32,7 +32,9 @@
       {{range $i, $p := .Pokemons}} {{if $i }}->{{end}}
       <span class="text-center"
         ><img
-          src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{$p.Id}}.png"
+          height="64"
+          width="64"
+          src="{{$p.SplashUrl}}"
           alt=""
         />{{$p.Name}}</span
       >
